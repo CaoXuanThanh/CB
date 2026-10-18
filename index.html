@@ -47,7 +47,7 @@
     </div>
   </div>
 
-  <!-- Hộp Thông Báo Lỗi / Thành Công (Thay thế hoàn toàn alert xấu xí) -->
+  <!-- Hộp Thông Báo Lỗi / Thành Công -->
   <div id="alertBox" class="hidden mx-4 mt-4 p-3.5 rounded-2xl text-xs font-semibold border"></div>
 
   <!-- Khung Tạo Link Mua Hàng -->
@@ -74,7 +74,7 @@
         🚀 KÍCH HOẠT HOÀN TIỀN
       </button>
 
-      <!-- Hộp Kết Quả Mở App Shopee (Chuẩn chống chặn Pop-up trên iPhone/Zalo) -->
+      <!-- Hộp Kết Quả Mở App Shopee -->
       <div id="boxKetQuaLink" class="hidden mt-4 p-4 bg-green-50 border-2 border-green-500 rounded-2xl text-center">
         <p class="text-xs text-green-900 font-bold mb-1">✅ ĐÃ KÍCH HOẠT HOÀN TIỀN THÀNH CÔNG!</p>
         <p id="tenSPKetQua" class="text-[11px] text-gray-600 line-clamp-1 mb-3"></p>
@@ -84,10 +84,10 @@
           👉 BẤM VÀO ĐÂY ĐỂ MỞ SHOPEE MUA HÀNG
         </a>
 
-        <div class="text-left bg-yellow-50 border border-yellow-200 p-2.5 rounded-xl text-[11px] text-yellow-900 space-y-1 leading-relaxed">
-          <p class="font-bold">💡 Mẹo nhỏ để không bị mất hoàn tiền:</p>
-          <p>1. Khi Shopee mở ra, bấm vào sản phẩm ở <b>khung trên cùng</b> để chọn lại đúng phân loại/màu sắc rồi bấm <b>Mua ngay</b> (hoặc <b>Thêm vào giỏ hàng mới</b>).</p>
-          <p>2. <b>Không</b> thanh toán sản phẩm đã bỏ sẵn trong giỏ hàng từ trước.</p>
+        <div class="text-left bg-yellow-50 border border-yellow-300 p-3 rounded-xl text-xs text-yellow-900 space-y-1.5 leading-relaxed">
+          <p class="font-extrabold text-orange-700">📌 LƯU Ý QUAN TRỌNG KHI SHOPEE MỞ RA:</p>
+          <p>1. Hãy <b>chạm vào hình ảnh sản phẩm ở khung đầu tiên trên cùng</b> để vào lại trang chi tiết và chọn đúng phân loại/mức giá bạn muốn mua.</p>
+          <p>2. Bấm <b>Mua ngay</b> hoặc <b>Thêm vào giỏ hàng mới</b> (Không thanh toán món đã bỏ sẵn trong giỏ từ trước).</p>
         </div>
       </div>
     </div>
@@ -133,13 +133,13 @@
       <p class="font-bold text-sm text-gray-900">📌 3 bước mua Shopee nhận hoàn tiền:</p>
       <p><b>Bước 1:</b> Vào App Shopee chọn món cần mua, bấm nút <b>Chia sẻ (mũi tên cong)</b> → Chọn <b>Sao chép đường dẫn (Copy Link)</b>.</p>
       <p><b>Bước 2:</b> Mở trang này lên, bấm <b>📋 Chạm để Dán nhanh</b> → Bấm <b>Kích Hoạt Hoàn Tiền</b>.</p>
-      <p><b>Bước 3:</b> Bấm nút màu xanh lá để mở lại Shopee, chọn phân loại hàng và đặt mua. Khi nhận hàng xong, tiền hoàn sẽ cộng vào Ví!</p>
+      <p><b>Bước 3:</b> Bấm nút màu xanh lá để mở lại Shopee, chạm vào sản phẩm trên cùng để chọn phân loại hàng và đặt mua. Khi nhận hàng xong, tiền hoàn sẽ cộng vào Ví!</p>
     </div>
   </div>
 
   <script>
-    // ĐƯỜNG LINK API GOOGLE APPS SCRIPT CỦA BẠN
-    const API_URL = "https://script.google.com/macros/s/AKfycbyYEQksLDQKHXJBFiVlsvwvn1Df12vstiQrDJuElEXwgHhaA-VBa9ilWvmx_f6PXjlj/exec";
+    // ĐƯỜNG LINK API GOOGLE APPS SCRIPT CHUẨN CỦA BẠN
+    const API_URL = "https://script.google.com/macros/s/AKfycbyYEQksLDQKHXJBFiVIsvwvn1Df12vstiQrDJuElEXwgHhaA-VBa9iIWvmx_f6PXjlJ/exec";
 
     function formatVND(num) { return Number(num || 0).toLocaleString('vi-VN') + ' đ'; }
 
@@ -152,13 +152,13 @@
     }
 
     async function goiAPI(payload) {
-      const resp = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
+      const params = new URLSearchParams(payload).toString();
+      const resp = await fetch(API_URL + "?" + params, {
+        method: "GET",
+        redirect: "follow"
       });
       const json = await resp.json();
-      if (!json.ok) throw new Error(json.error || 'Có lỗi xảy ra, vui lòng thử lại!');
+      if (!json.ok) throw new Error(json.error || "Có lỗi xảy ra, vui lòng thử lại!");
       return json.data;
     }
 
@@ -185,7 +185,7 @@
       } catch (e) {
         const input = document.getElementById('linkInput');
         input.focus();
-        hienThongBao('Trình duyệt yêu cầu dán thủ công: Bạn hãy chạm giữ vào ô trống rồi chọn "Dán (Paste)" nhé!', true);
+        hienThongBao('Bạn hãy chạm giữ vào ô trống rồi chọn "Dán (Paste)" nhé!', true);
       }
     }
 
