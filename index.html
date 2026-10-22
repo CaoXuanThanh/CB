@@ -7,15 +7,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { 
-      font-family: 'Inter', sans-serif; 
-      background-color: #f4f4f5; 
-      -webkit-tap-highlight-color: transparent; 
-    }
+    body { font-family: 'Inter', sans-serif; background-color: #f4f4f5; -webkit-tap-highlight-color: transparent; }
     .shopee-bg { background-color: #ee4d2d; }
-    .shopee-text { color: #ee4d2d; }
     .card-shadow { box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
-    /* Ẩn scrollbar */
     ::-webkit-scrollbar { width: 0px; background: transparent; }
   </style>
 </head>
@@ -35,17 +29,22 @@
     <div class="bg-white rounded-2xl card-shadow p-5 mb-5">
       <div class="flex items-center gap-2 mb-3">
         <div class="w-8 h-8 rounded-full bg-orange-50 flex items-center justify-center text-lg">🔗</div>
-        <h2 class="font-bold text-gray-800 text-sm">Dán link sản phẩm vào đây</h2>
+        <h2 class="font-bold text-gray-800 text-sm">Dán link vào đây</h2>
       </div>
 
-      <textarea id="linkInput" rows="2" placeholder="Dán đường dẫn sản phẩm Shopee..." 
-        class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:border-[#ee4d2d] focus:bg-white transition-colors resize-none mb-3"></textarea>
+      <!-- ĐIỂM VÁ 2: Thêm nút Dán Nhanh -->
+      <div class="relative mb-3">
+        <textarea id="linkInput" rows="2" placeholder="Dán đường dẫn Shopee..." 
+          class="w-full p-3.5 pr-12 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:outline-none focus:border-[#ee4d2d] focus:bg-white transition-colors resize-none"></textarea>
+        <button onclick="danNhanhClipboard()" class="absolute right-2 top-2 p-2 bg-orange-100 text-[#ee4d2d] rounded-lg active:bg-orange-200 transition-colors" title="Dán nhanh">
+          📋
+        </button>
+      </div>
 
-      <!-- Khung nhập SĐT Nhanh -->
       <div id="boxNhapSDT" class="mb-4">
         <label class="text-xs font-semibold text-gray-500 mb-1.5 block">Số điện thoại nhận tiền hoàn:</label>
         <input id="fastPhoneInput" type="tel" placeholder="Ví dụ: 0901234567" 
-          class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-[#ee4d2d] focus:bg-white transition-colors" />
+          class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-[#ee4d2d] transition-colors" />
       </div>
 
       <button id="btnMua" onclick="xuLyMuaHang()" 
@@ -53,7 +52,7 @@
         KÍCH HOẠT HOÀN TIỀN
       </button>
 
-      <!-- Hộp Kết Quả (Ẩn mặc định) -->
+      <!-- Hộp Kết Quả -->
       <div id="boxKetQuaLink" class="hidden mt-4 p-4 bg-green-50 border border-green-100 rounded-xl text-center">
         <p class="text-sm text-green-700 font-bold mb-1">✅ Kích hoạt thành công!</p>
         <p id="tenSPKetQua" class="text-[11px] text-gray-500 line-clamp-2 mb-3 px-2"></p>
@@ -66,7 +65,6 @@
 
     <!-- KHU VỰC QUẢN LÝ VÍ -->
     <div class="bg-white rounded-2xl card-shadow mb-5 overflow-hidden">
-      <!-- Nút Header Ví -->
       <div class="px-5 py-4 flex justify-between items-center cursor-pointer active:bg-gray-50" onclick="toggleVi()">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-yellow-50 rounded-full flex items-center justify-center text-xl">👛</div>
@@ -78,9 +76,8 @@
         <span id="viIcon" class="text-gray-400 font-bold transform transition-transform duration-300">▼</span>
       </div>
       
-      <!-- Form đăng nhập Ví -->
       <div id="formQuanLyVi" class="hidden p-5 border-t border-gray-100 bg-gray-50/50">
-        <div class="space-y-3 mb-4">
+        <div class="space-y-3 mb-2">
           <input id="phoneInput" type="tel" placeholder="Số điện thoại" 
             class="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-[#ee4d2d]" />
           <div class="flex gap-2">
@@ -91,8 +88,9 @@
             </button>
           </div>
         </div>
+        <!-- ĐIỂM VÁ 3: Nút quên PIN -->
+        <p class="text-[11px] text-gray-400 text-center mb-4">Quên mã PIN? Nhắn tin cho Thành để reset nhé!</p>
 
-        <!-- Bảng số dư -->
         <div id="soDuArea" class="hidden grid grid-cols-2 gap-3 mt-2">
           <div class="bg-white p-3.5 rounded-xl border border-green-100 text-center shadow-sm">
             <span class="text-[10px] text-gray-500 font-medium block mb-1">Số dư rút được</span>
@@ -106,7 +104,6 @@
       </div>
     </div>
     
-    <!-- Hộp Thông Báo Lỗi / Thành Công -->
     <div id="alertBox" class="hidden mb-4 p-3.5 rounded-xl text-[13px] font-medium border flex items-center gap-2 shadow-sm"></div>
 
     <!-- TABS ĐIỀU HƯỚNG -->
@@ -119,12 +116,16 @@
       </button>
     </div>
 
-    <!-- NỘI DUNG TABS -->
     <!-- TAB: Lịch sử đơn -->
     <div id="tabDonHang" class="space-y-3">
+      <!-- ĐIỂM VÁ 1: Nhắc nhở độ trễ -->
+      <div class="bg-blue-50 border border-blue-100 p-3 rounded-xl flex gap-2 shadow-sm">
+        <span>💡</span>
+        <p class="text-[11px] text-blue-800 leading-relaxed">Shopee cần thời gian để đối soát. Đơn hàng mới mua sẽ hiện lên hệ thống vào <b class="font-bold">trưa ngày hôm sau</b> nhé.</p>
+      </div>
+
       <div id="danhSachDon">
-        <div class="text-center py-8">
-          <span class="text-3xl block mb-2 opacity-50">🧾</span>
+        <div class="text-center py-6">
           <p class="text-xs font-medium text-gray-400">Đăng nhập "Ví của tôi" để xem đơn hàng</p>
         </div>
       </div>
@@ -135,7 +136,20 @@
       <div class="bg-white rounded-2xl p-5 mb-5 card-shadow">
         <h3 class="font-bold text-gray-800 mb-4 text-sm">Tạo lệnh rút tiền</h3>
         <div class="space-y-3">
-          <input id="bankName" type="text" placeholder="Tên Ngân hàng (VD: MB, VCB...)" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none" />
+          <!-- ĐIỂM VÁ 4: Dropdown Ngân hàng -->
+          <select id="bankName" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none text-gray-700">
+            <option value="" disabled selected>-- Chọn Ngân hàng --</option>
+            <option value="MB">MB Bank</option>
+            <option value="VCB">Vietcombank</option>
+            <option value="TCB">Techcombank</option>
+            <option value="BIDV">BIDV</option>
+            <option value="VietinBank">VietinBank</option>
+            <option value="Agribank">Agribank</option>
+            <option value="ACB">ACB</option>
+            <option value="VPBank">VPBank</option>
+            <option value="TPBank">TPBank</option>
+            <option value="Momo">Ví Momo</option>
+          </select>
           <input id="bankAcc" type="text" placeholder="Số tài khoản" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none" />
           <input id="bankOwner" type="text" placeholder="Tên chủ tài khoản" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none uppercase" />
           <input id="withdrawAmount" type="number" placeholder="Số tiền rút (Tối thiểu 10,000đ)" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-green-600 focus:outline-none" />
@@ -148,8 +162,8 @@
       <div id="danhSachRut" class="space-y-3"></div>
     </div>
 
-    <!-- Nút Lấy link giới thiệu (Đổi copy thành an toàn, không nhắc % cụ thể) -->
-    <div class="mt-6 text-center pb-8">
+    <!-- Nút Lấy link giới thiệu -->
+    <div class="mt-4 text-center pb-8">
       <button onclick="layLinkGioiThieu()" class="text-[13px] text-[#ee4d2d] font-bold bg-orange-50 px-4 py-2.5 rounded-full border border-orange-100 active:bg-orange-100 transition-colors">
         🔗 Lấy link giới thiệu nhận thưởng hoa hồng
       </button>
@@ -180,6 +194,19 @@
       box.innerHTML = `<span class="text-base">${isError ? '⚠️' : '✅'}</span> <span>${msg}</span>`;
       box.classList.remove('hidden');
       setTimeout(() => box.classList.add('hidden'), 4000);
+    }
+
+    // Logic Dán Nhanh Clipboard
+    async function danNhanhClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          document.getElementById('linkInput').value = text;
+          hienThongBao('Đã dán link thành công!', false);
+        }
+      } catch (e) {
+        hienThongBao('Chạm vào ô và chọn Dán (Paste) để dán link nhé!', true);
+      }
     }
 
     async function goiAPI(payload) {
@@ -214,7 +241,7 @@
       const refBy = localStorage.getItem('ref_by') || ""; 
 
       if (!phone) return hienThongBao('Vui lòng nhập Số điện thoại!', true);
-      if (!rawLink.includes('shopee')) return hienThongBao('Vui lòng dán link Shopee hợp lệ!', true);
+      if (!rawLink.includes('shopee') && !rawLink.includes('shp.ee')) return hienThongBao('Vui lòng dán link Shopee hợp lệ!', true);
 
       localStorage.setItem('cashback_phone', phone);
       document.getElementById('boxNhapSDT').classList.add('hidden');
@@ -249,7 +276,7 @@
 
         const donContainer = document.getElementById('danhSachDon');
         donContainer.innerHTML = (res.lichSuDon.length === 0) ? 
-          '<div class="text-center py-8"><p class="text-xs font-medium text-gray-400">Chưa có đơn hàng nào.</p></div>' 
+          '<div class="text-center py-6"><p class="text-xs font-medium text-gray-400">Chưa có đơn hàng nào.</p></div>' 
           : res.lichSuDon.map(d => `
             <div class="bg-white rounded-xl p-3.5 flex justify-between items-center mb-2 shadow-sm border border-gray-100">
               <div class="pr-3">
@@ -278,7 +305,7 @@
     async function guiYeuCauRut() {
       const phone = document.getElementById('phoneInput').value.trim();
       const pin = document.getElementById('pinInput').value.trim();
-      const bank = document.getElementById('bankName').value.trim();
+      const bank = document.getElementById('bankName').value; // Lấy từ dropdown
       const acc = document.getElementById('bankAcc').value.trim();
       const owner = document.getElementById('bankOwner').value.trim();
       const amount = document.getElementById('withdrawAmount').value.trim();
@@ -289,6 +316,7 @@
       try {
         await goiAPI({ action: 'rutTien', phone: phone, pin: pin, bank: bank, acc: acc, owner: owner, amount: amount });
         hienThongBao('Gửi yêu cầu thành công!', false);
+        document.getElementById('withdrawAmount').value = '';
         taiDuLieuVi(true);
       } catch (err) { hienThongBao(err.message, true); }
     }
