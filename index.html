@@ -3,138 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Hoàn Tiền Mua Sắm</title>
+  <title>Hoàn Tiền Mua Sắm Shopee</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; -webkit-tap-highlight-color: transparent; }
-    @keyframes pulse-border { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-    .animate-cta { animation: pulse-border 1.5s infinite; }
+    body { 
+      font-family: 'Plus Jakarta Sans', sans-serif; 
+      background-color: #f8fafc; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-primary {
+      box-shadow: 0 8px 25px -8px rgba(249, 115, 22, 0.6);
+      transition: all 0.2s ease;
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-slide-down { animation: slideDown 0.3s ease forwards; }
+    
+    /* Ẩn scrollbar cho mượt */
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
   </style>
 </head>
-<body class="max-w-md mx-auto min-h-screen bg-gray-50 pb-24 shadow-lg">
+<body class="max-w-md mx-auto min-h-screen pb-24 relative">
 
-  <!-- Header & Quản lý ví -->
-  <div class="bg-gradient-to-r from-orange-500 to-red-600 text-white p-5 rounded-b-3xl shadow-md">
-    <div class="flex justify-between items-center mb-1">
-      <h1 class="text-xl font-extrabold tracking-tight">🎁 Mua sắm hoàn tiền</h1>
-      <span class="text-xs bg-white/20 px-3 py-1 rounded-full font-semibold">Shopee</span>
+  <!-- Vùng Header Cam/Đỏ gradient lót phía sau -->
+  <div class="absolute top-0 left-0 right-0 h-64 bg-gradient-to-br from-orange-500 via-red-500 to-pink-500 rounded-b-[40px] -z-10 shadow-lg"></div>
+
+  <!-- Header Content -->
+  <div class="pt-8 px-5 pb-6 text-white">
+    <div class="flex justify-between items-center mb-2">
+      <h1 class="text-2xl font-extrabold tracking-tight drop-shadow-md">Hoàn Tiền Shopee</h1>
+      <span class="bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold shadow-sm border border-white/30">
+        💸 Hoàn tới 50%
+      </span>
+    </div>
+    <p class="text-sm text-orange-50 opacity-90 font-medium">Mua sắm thông minh, tự động tích lũy tiền mặt.</p>
+  </div>
+
+  <!-- KHU VỰC THAO TÁC CHÍNH (Card nổi bật nhất) -->
+  <div class="px-4 -mt-2">
+    <div class="glass-card rounded-[28px] p-5 mb-5">
+      <h2 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+        <span class="text-xl">🔗</span> Dán link cần mua vào đây
+      </h2>
+
+      <div class="relative mb-4">
+        <textarea id="linkInput" rows="2" placeholder="Dán đường dẫn sản phẩm Shopee..." 
+          class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl text-sm font-medium text-gray-700 focus:outline-none focus:border-orange-400 focus:bg-white transition-colors resize-none placeholder-gray-400"></textarea>
+      </div>
+
+      <!-- Khung nhập SĐT Nhanh -->
+      <div id="boxNhapSDT" class="mb-4 animate-slide-down">
+        <label class="text-[13px] font-semibold text-gray-600 mb-1.5 block ml-1">Nhập Số điện thoại để nhận tiền:</label>
+        <div class="relative">
+          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">📱</span>
+          <input id="fastPhoneInput" type="tel" placeholder="Ví dụ: 0901234567" 
+            class="w-full pl-11 pr-4 py-3.5 bg-gray-50 border-2 border-gray-100 rounded-2xl text-sm font-bold text-gray-800 focus:outline-none focus:border-orange-400 focus:bg-white transition-colors" />
+        </div>
+      </div>
+
+      <button id="btnMua" onclick="xuLyMuaHang()" 
+        class="btn-primary w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-extrabold text-[15px] py-4 rounded-2xl">
+        🚀 KÍCH HOẠT HOÀN TIỀN
+      </button>
+
+      <!-- Hộp Kết Quả -->
+      <div id="boxKetQuaLink" class="hidden mt-4 p-5 bg-green-50/80 border border-green-200 rounded-2xl text-center animate-slide-down">
+        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-2">
+          <span class="text-2xl">🎉</span>
+        </div>
+        <p class="text-sm text-green-800 font-bold mb-1">Đã kích hoạt thành công!</p>
+        <p id="tenSPKetQua" class="text-xs text-gray-600 line-clamp-2 mb-4 px-2"></p>
+        <a id="linkChuyenHuong" href="#" target="_top" 
+          class="block w-full bg-green-600 text-white font-bold text-sm py-3.5 rounded-xl shadow-lg active:scale-95 transition-transform">
+          👉 BẤM ĐỂ MỞ SHOPEE
+        </a>
+      </div>
+    </div>
+
+    <!-- KHU VỰC QUẢN LÝ VÍ (Đã Fix Lỗi Event Bubbling) -->
+    <div class="glass-card rounded-[24px] mb-6 overflow-hidden transition-all duration-300">
+      <!-- Nút bấm đóng/mở ví tách biệt -->
+      <div class="px-5 py-4 bg-gray-50/50 flex justify-between items-center cursor-pointer active:bg-gray-100" onclick="toggleVi()">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-lg shadow-inner">👛</div>
+          <div>
+            <p class="font-bold text-gray-800 text-sm">Ví của tôi</p>
+            <p class="text-[11px] text-gray-500 font-medium">Quản lý số dư & Rút tiền</p>
+          </div>
+        </div>
+        <span id="viIcon" class="text-gray-400 font-bold text-lg transform transition-transform duration-300">＋</span>
+      </div>
+      
+      <!-- Nội dung form (Sẽ không bị đóng khi click vào trong) -->
+      <div id="formQuanLyVi" class="hidden p-5 border-t border-gray-100 bg-white">
+        <div class="space-y-3 mb-4">
+          <input id="phoneInput" type="tel" placeholder="Số điện thoại" 
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-800 focus:outline-none focus:border-orange-400" />
+          <div class="flex gap-2">
+            <input id="pinInput" type="password" placeholder="PIN 4 số" maxlength="6"
+              class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-center tracking-[0.3em] text-gray-800 focus:outline-none focus:border-orange-400" />
+            <button onclick="taiDuLieuVi(false)" class="bg-gray-800 text-white font-bold px-6 rounded-xl text-sm active:scale-95 transition-transform">
+              Đăng nhập
+            </button>
+          </div>
+        </div>
+
+        <!-- Bảng số dư -->
+        <div id="soDuArea" class="hidden grid grid-cols-2 gap-3 mt-4">
+          <div class="bg-green-50 p-4 rounded-2xl border border-green-100 text-center">
+            <span class="text-[11px] text-green-700 font-bold uppercase tracking-wider block mb-1">Số dư rút được</span>
+            <span id="soDuKhaDung" class="text-lg font-black text-green-600">0 đ</span>
+          </div>
+          <div class="bg-orange-50 p-4 rounded-2xl border border-orange-100 text-center">
+            <span class="text-[11px] text-orange-700 font-bold uppercase tracking-wider block mb-1">Đơn chờ duyệt</span>
+            <span id="soDonCho" class="text-lg font-black text-orange-600">0 đơn</span>
+          </div>
+        </div>
+      </div>
     </div>
     
-    <div class="mt-4 bg-white/15 backdrop-blur-sm p-3 rounded-2xl border border-white/25 cursor-pointer" onclick="toggleVi()">
-      <div class="flex justify-between items-center">
-        <span class="text-sm font-bold">💰 Ví của tôi (Bấm để xem/rút tiền)</span>
-        <span class="text-xs bg-white/30 px-2 py-1 rounded">▼</span>
-      </div>
-      <!-- Form Ví ẩn/hiện -->
-      <div id="formQuanLyVi" class="hidden mt-3 pt-3 border-t border-white/20 space-y-2">
-        <input id="phoneInput" type="tel" placeholder="Số điện thoại của bạn" class="w-full px-3 py-2 rounded-xl text-gray-900 text-sm focus:outline-none" />
-        <div class="flex gap-2">
-          <input id="pinInput" type="password" placeholder="Mã PIN 4 số" class="w-full px-3 py-2 rounded-xl text-gray-900 text-sm focus:outline-none text-center tracking-widest" />
-          <button onclick="taiDuLieuVi(false)" class="bg-yellow-400 text-gray-900 font-bold px-4 rounded-xl text-sm whitespace-nowrap">Xem Ví</button>
+    <!-- Hộp Thông Báo Lỗi / Thành Công -->
+    <div id="alertBox" class="hidden mb-4 p-4 rounded-2xl text-sm font-bold border flex items-start gap-2 shadow-sm animate-slide-down"></div>
+
+    <!-- TABS ĐIỀU HƯỚNG (Kiểu iOS) -->
+    <div class="bg-gray-200/80 p-1.5 rounded-[16px] flex mb-4 relative backdrop-blur-sm">
+      <button id="btnTabDon" onclick="chuyenTab('tabDonHang')" class="flex-1 py-2.5 text-sm font-bold rounded-xl bg-white shadow-sm text-gray-800 transition-all duration-200">
+        📝 Lịch sử đơn
+      </button>
+      <button id="btnTabRut" onclick="chuyenTab('tabRutTien')" class="flex-1 py-2.5 text-sm font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all duration-200">
+        🏦 Rút tiền
+      </button>
+    </div>
+
+    <!-- NỘI DUNG TABS -->
+    <!-- TAB: Lịch sử đơn -->
+    <div id="tabDonHang" class="space-y-3">
+      <div id="danhSachDon">
+        <div class="text-center py-10 opacity-60">
+          <span class="text-4xl block mb-2">📭</span>
+          <p class="text-xs font-medium text-gray-500">Đăng nhập "Ví của tôi" để xem các đơn hàng</p>
         </div>
       </div>
     </div>
 
-    <!-- Thẻ Số Dư -->
-    <div id="soDuArea" class="hidden mt-3.5 grid grid-cols-2 gap-3 text-center">
-      <div class="bg-white text-gray-800 p-3 rounded-2xl shadow-sm">
-        <span class="text-xs text-gray-500 font-medium block">Số dư rút được</span>
-        <span id="soDuKhaDung" class="text-lg font-extrabold text-green-600">0 đ</span>
+    <!-- TAB: Rút tiền -->
+    <div id="tabRutTien" class="hidden">
+      <div class="glass-card rounded-[24px] p-5 mb-5 border-t-4 border-t-green-500">
+        <h3 class="font-extrabold text-gray-800 mb-4 text-center">Tạo lệnh rút tiền</h3>
+        <div class="space-y-3">
+          <input id="bankName" type="text" placeholder="Tên Ngân hàng (VD: MB, VCB...)" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-green-400" />
+          <input id="bankAcc" type="text" placeholder="Số tài khoản" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-green-400" />
+          <input id="bankOwner" type="text" placeholder="Tên chủ tài khoản" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-green-400 uppercase" />
+          <input id="withdrawAmount" type="number" placeholder="Số tiền muốn rút (Tối thiểu 10K)" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-green-600 focus:outline-none focus:border-green-400" />
+          <button onclick="guiYeuCauRut()" class="w-full bg-gray-800 text-white font-extrabold py-4 rounded-xl shadow-lg active:scale-95 transition-transform mt-2">
+            Gửi Yêu Cầu Rút
+          </button>
+        </div>
       </div>
-      <div class="bg-white text-gray-800 p-3 rounded-2xl shadow-sm">
-        <span class="text-xs text-gray-500 font-medium block">Đơn chờ đối soát</span>
-        <span id="soDonCho" class="text-lg font-extrabold text-orange-500">0 đơn</span>
-      </div>
+      <h4 class="font-bold text-xs text-gray-500 uppercase tracking-widest mb-3 ml-2">Lịch sử rút:</h4>
+      <div id="danhSachRut" class="space-y-3"></div>
     </div>
-  </div>
 
-  <div id="alertBox" class="hidden mx-4 mt-4 p-3.5 rounded-2xl text-xs font-semibold border"></div>
-
-  <!-- BƯỚC MUA HÀNG CHÍNH (Rất đơn giản) -->
-  <div class="p-4">
-    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-      <div class="flex justify-between items-center mb-3">
-        <h2 class="font-bold text-gray-800">🛒 Dán link mua hàng vào đây</h2>
-      </div>
-
-      <textarea id="linkInput" rows="2" placeholder="Dán link sản phẩm Shopee..." 
-        class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none mb-3"></textarea>
-
-      <!-- Khung nhập SĐT (Chỉ hiện khi chưa có SĐT) -->
-      <div id="boxNhapSDT" class="mb-3">
-        <label class="text-xs text-gray-500 mb-1 block">Nhập Số điện thoại để nhận hoàn tiền đơn này:</label>
-        <input id="fastPhoneInput" type="tel" placeholder="Số điện thoại của bạn" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none" />
-      </div>
-
-      <button id="btnMua" onclick="xuLyMuaHang()" class="w-full bg-gradient-to-r from-orange-500 to-red-600 text-white font-extrabold py-3.5 rounded-xl shadow-md transition text-sm">
-        🚀 NHẬN HOÀN TIỀN NGAY
+    <!-- Nút Lấy link giới thiệu (Đẹp hơn) -->
+    <div class="mt-8 text-center pb-8">
+      <button onclick="layLinkGioiThieu()" class="group inline-flex items-center gap-2 text-sm text-blue-600 font-bold bg-blue-50/80 backdrop-blur px-5 py-3 rounded-full border border-blue-200 shadow-sm active:scale-95 transition-all">
+        <span>🔗</span> Lấy link giới thiệu kiếm thêm 30% hoa hồng
       </button>
-
-      <!-- Hộp Kết Quả -->
-      <div id="boxKetQuaLink" class="hidden mt-4 p-4 bg-green-50 border-2 border-green-500 rounded-2xl text-center">
-        <p class="text-xs text-green-900 font-bold mb-1">✅ KÍCH HOẠT HOÀN TIỀN THÀNH CÔNG!</p>
-        <p id="tenSPKetQua" class="text-[11px] text-gray-600 line-clamp-1 mb-3"></p>
-        <a id="linkChuyenHuong" href="#" target="_top" class="animate-cta block w-full bg-green-600 text-white font-extrabold text-sm py-3.5 rounded-xl shadow-lg mb-2">
-          👉 MỞ SHOPEE MUA HÀNG
-        </a>
-      </div>
     </div>
-  </div>
 
-  <!-- Các chức năng khác -->
-  <div class="px-4 mb-3">
-    <div class="grid grid-cols-2 bg-gray-200 p-1 rounded-xl text-xs font-bold text-gray-600">
-      <button onclick="chuyenTab('tabDonHang')" id="btnTabDon" class="py-2.5 rounded-lg bg-white text-gray-900 shadow-sm">Lịch sử đơn</button>
-      <button onclick="chuyenTab('tabRutTien')" id="btnTabRut" class="py-2.5 rounded-lg">Rút tiền</button>
-    </div>
-  </div>
-
-  <div id="tabDonHang" class="px-4">
-    <div id="danhSachDon" class="space-y-2.5">
-      <p class="text-center text-xs text-gray-400 py-6">Đăng nhập "Ví của tôi" để xem lịch sử.</p>
-    </div>
-  </div>
-
-  <div id="tabRutTien" class="px-4 hidden">
-    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-4 space-y-2.5">
-      <input id="bankName" type="text" placeholder="Tên Ngân hàng" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" />
-      <input id="bankAcc" type="text" placeholder="Số tài khoản" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" />
-      <input id="bankOwner" type="text" placeholder="Tên chủ tài khoản" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" />
-      <input id="withdrawAmount" type="number" placeholder="Số tiền muốn rút" class="w-full p-3 bg-gray-50 border rounded-xl text-sm" />
-      <button onclick="guiYeuCauRut()" class="w-full bg-green-600 text-white font-bold py-3.5 rounded-xl shadow">Rút Tiền</button>
-    </div>
-    <div id="danhSachRut" class="space-y-2"></div>
-  </div>
-
-  <!-- Nút Lấy link giới thiệu -->
-  <div class="px-4 mt-6 text-center">
-    <button onclick="layLinkGioiThieu()" class="text-xs text-blue-600 font-bold bg-blue-50 px-4 py-2 rounded-full border border-blue-200">🔗 Lấy link giới thiệu kiếm thêm 30%</button>
-  </div>
+  </div> <!-- End Khu vực chính -->
 
   <script>
-    // URL Web App của bạn
+    // ĐỔI URL API CỦA BẠN VÀO ĐÂY
     const API_URL = "https://script.google.com/macros/s/AKfycbyYEQksLDQKHXJBFiVIsvwvn1Df12vstiQrDJuElEXwgHhaA-VBa9iIWvmx_f6PXjlJ/exec";
     
-    // GHI NHẬN MÃ GIỚI THIỆU TỪ URL NGAY KHI VÀO TRANG
+    // Khởi tạo
     window.onload = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const ref = urlParams.get('ref');
-      if (ref) localStorage.setItem('ref_by', ref); // Lưu sđt của bạn A ngầm vào máy khách
+      if (ref) localStorage.setItem('ref_by', ref); 
 
-      // Tự động điền SĐT nếu khách đã từng mua
       const savedPhone = localStorage.getItem('cashback_phone');
       if (savedPhone) {
         document.getElementById('fastPhoneInput').value = savedPhone;
-        document.getElementById('boxNhapSDT').classList.add('hidden'); // Giấu ô nhập đi cho mượt
+        document.getElementById('boxNhapSDT').classList.add('hidden'); 
         document.getElementById('phoneInput').value = savedPhone;
       }
     };
 
     function hienThongBao(msg, isError = true) {
       const box = document.getElementById('alertBox');
-      box.className = `mx-4 mt-4 p-3.5 rounded-2xl text-xs font-semibold border ${isError ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200'}`;
-      box.innerText = (isError ? '⚠️ ' : '✅ ') + msg;
+      box.className = `mb-5 p-4 rounded-2xl text-sm font-bold border flex items-start gap-3 shadow-sm animate-slide-down ${isError ? 'bg-red-50 text-red-700 border-red-200' : 'bg-green-50 text-green-700 border-green-200'}`;
+      box.innerHTML = `<span class="text-xl leading-none">${isError ? '⚠️' : '✅'}</span> <p>${msg}</p>`;
       box.classList.remove('hidden');
       setTimeout(() => box.classList.add('hidden'), 5000);
     }
@@ -147,42 +214,55 @@
       return json.data;
     }
 
-    function formatVND(num) { return Number(num || 0).toLocaleString('vi-VN') + ' đ'; }
+    function formatVND(num) { return Number(num || 0).toLocaleString('vi-VN') + ' ₫'; }
 
-    function toggleVi() { document.getElementById('formQuanLyVi').classList.toggle('hidden'); }
-    function chuyenTab(tabId) {
-      ['tabDonHang', 'tabRutTien'].forEach(id => document.getElementById(id).classList.add('hidden'));
-      ['btnTabDon', 'btnTabRut'].forEach(id => document.getElementById(id).className = 'py-2.5 rounded-lg text-gray-600');
-      document.getElementById(tabId).classList.remove('hidden');
-      document.getElementById(tabId === 'tabDonHang' ? 'btnTabDon' : 'btnTabRut').className = 'py-2.5 rounded-lg bg-white text-gray-900 shadow-sm';
+    // Toggle Ví (Đã sửa lỗi event bubbling bằng cách tách riêng nút Header và Form)
+    function toggleVi() { 
+      const form = document.getElementById('formQuanLyVi');
+      const icon = document.getElementById('viIcon');
+      form.classList.toggle('hidden');
+      if(form.classList.contains('hidden')) {
+        icon.style.transform = 'rotate(0deg)';
+        icon.innerText = '＋';
+      } else {
+        icon.style.transform = 'rotate(180deg)';
+        icon.innerText = '－';
+      }
     }
 
-    // LUỒNG TẠO LINK MUA HÀNG (Không cần PIN)
+    function chuyenTab(tabId) {
+      ['tabDonHang', 'tabRutTien'].forEach(id => document.getElementById(id).classList.add('hidden'));
+      ['btnTabDon', 'btnTabRut'].forEach(id => {
+        document.getElementById(id).className = 'flex-1 py-2.5 text-sm font-bold rounded-xl text-gray-500 hover:text-gray-700 transition-all duration-200';
+      });
+      document.getElementById(tabId).classList.remove('hidden');
+      document.getElementById(tabId === 'tabDonHang' ? 'btnTabDon' : 'btnTabRut').className = 'flex-1 py-2.5 text-sm font-bold rounded-xl bg-white shadow-sm text-gray-800 transition-all duration-200';
+    }
+
     async function xuLyMuaHang() {
       let phone = document.getElementById('fastPhoneInput').value.trim() || document.getElementById('phoneInput').value.trim();
       const rawLink = document.getElementById('linkInput').value.trim();
-      const refBy = localStorage.getItem('ref_by') || ""; // Lấy mã của bạn A ra
+      const refBy = localStorage.getItem('ref_by') || ""; 
 
-      if (!phone) return hienThongBao('Vui lòng nhập Số điện thoại để hệ thống biết trả tiền hoàn cho ai!', true);
+      if (!phone) return hienThongBao('Vui lòng nhập Số điện thoại để nhận hoàn tiền!', true);
       if (!rawLink.includes('shopee')) return hienThongBao('Vui lòng dán link sản phẩm Shopee hợp lệ!', true);
 
-      // Lưu đè lại sđt để lần sau khách vào không phải nhập nữa
       localStorage.setItem('cashback_phone', phone);
       document.getElementById('boxNhapSDT').classList.add('hidden');
 
       const btn = document.getElementById('btnMua');
-      btn.disabled = true; btn.innerText = '⏳ Đang xử lý...';
+      btn.disabled = true; btn.innerHTML = '⏳ Đang xử lý...';
 
       try {
         const res = await goiAPI({ action: 'taoLink', phone: phone, rawText: rawLink, ref: refBy });
-        btn.disabled = false; btn.innerText = '🚀 NHẬN HOÀN TIỀN NGAY';
+        btn.disabled = false; btn.innerHTML = '🚀 KÍCH HOẠT HOÀN TIỀN LẦN NỮA';
         document.getElementById('linkInput').value = '';
         
         document.getElementById('tenSPKetQua').innerText = res.tenSP;
         document.getElementById('linkChuyenHuong').href = res.redirectUrl;
         document.getElementById('boxKetQuaLink').classList.remove('hidden');
       } catch (err) {
-        btn.disabled = false; btn.innerText = '🚀 NHẬN HOÀN TIỀN NGAY';
+        btn.disabled = false; btn.innerHTML = '🚀 KÍCH HOẠT HOÀN TIỀN';
         hienThongBao(err.message, true);
       }
     }
@@ -190,7 +270,7 @@
     async function taiDuLieuVi(chayNgam) {
       const phone = document.getElementById('phoneInput').value.trim();
       const pin = document.getElementById('pinInput').value.trim();
-      if (!phone || !pin) return hienThongBao('Nhập đủ SĐT và Mã PIN 4 số!', true);
+      if (!phone || !pin) return hienThongBao('Nhập đủ SĐT và Mã PIN 4 số để vào Ví!', true);
 
       try {
         const res = await goiAPI({ action: 'layVi', phone: phone, pin: pin });
@@ -199,23 +279,50 @@
         document.getElementById('soDonCho').innerText = res.soDonCho + ' đơn';
 
         const donContainer = document.getElementById('danhSachDon');
-        donContainer.innerHTML = (res.lichSuDon.length === 0) ? '<p class="text-center text-xs text-gray-400 py-6">Chưa có đơn hàng nào.</p>' 
-          : res.lichSuDon.map(d => `<div class="bg-white p-3.5 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center mb-2">
-            <div><span class="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded">${d.san}</span><p class="text-xs font-bold mt-1 line-clamp-1">${d.tenSP}</p></div>
-            <div class="text-right whitespace-nowrap"><span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full">${d.trangThai}</span><p class="text-sm font-bold text-green-600 mt-1">+${formatVND(d.tienHoan)}</p></div></div>`).join('');
+        donContainer.innerHTML = (res.lichSuDon.length === 0) ? 
+          '<div class="text-center py-10 opacity-60"><span class="text-4xl block mb-2">📭</span><p class="text-xs font-medium text-gray-500">Chưa có đơn hàng nào.</p></div>' 
+          : res.lichSuDon.map(d => `
+            <div class="glass-card rounded-[18px] p-4 flex justify-between items-center mb-3 border-l-4 ${d.trangThai === 'Đã duyệt' ? 'border-l-green-500' : 'border-l-yellow-400'}">
+              <div class="pr-3">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-gray-400 mb-1 block">${d.thoiGian}</span>
+                <p class="text-[13px] font-bold text-gray-800 line-clamp-1">${d.tenSP}</p>
+              </div>
+              <div class="text-right whitespace-nowrap">
+                <span class="text-[10px] font-bold px-2 py-1 rounded-md ${d.trangThai === 'Đã duyệt' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}">${d.trangThai}</span>
+                <p class="text-sm font-black text-green-600 mt-1.5">+${formatVND(d.tienHoan)}</p>
+              </div>
+            </div>`).join('');
         
-        if (res.isNewUser) hienThongBao('🎉 Đã tạo Ví mới bằng Mã PIN của bạn!', false);
+        if (res.isNewUser) hienThongBao('🎉 Đã tạo Ví mới thành công. Hãy nhớ Mã PIN nhé!', false);
       } catch (err) { hienThongBao(err.message, true); }
     }
 
     function layLinkGioiThieu() {
       const phone = localStorage.getItem('cashback_phone') || document.getElementById('phoneInput').value.trim();
-      if (!phone) return hienThongBao('Bạn cần dán link mua hàng hoặc điền SĐT 1 lần để hệ thống biết bạn là ai trước khi tạo link chia sẻ!', true);
+      if (!phone) return hienThongBao('Vui lòng kích hoạt 1 đơn hàng hoặc nhập SĐT trước để tạo mã định danh!', true);
       
-      const currentDomain = window.location.origin;
-      const refLink = currentDomain + '/?ref=' + phone;
+      const refLink = window.location.origin + '/?ref=' + phone;
       navigator.clipboard.writeText(refLink);
-      hienThongBao('🎉 Đã copy link giới thiệu! Gửi link này cho bạn bè, khi họ mua hàng bạn sẽ nhận được 30% hoa hồng!', false);
+      hienThongBao('🎉 Đã copy link giới thiệu! Hãy gửi cho bạn bè để nhận 30% hoa hồng nhé.', false);
+    }
+
+    // Code Rút tiền giữ nguyên logic cũ
+    async function guiYeuCauRut() {
+      const phone = document.getElementById('phoneInput').value.trim();
+      const pin = document.getElementById('pinInput').value.trim();
+      const bank = document.getElementById('bankName').value.trim();
+      const acc = document.getElementById('bankAcc').value.trim();
+      const owner = document.getElementById('bankOwner').value.trim();
+      const amount = document.getElementById('withdrawAmount').value.trim();
+
+      if (!phone || !pin) return hienThongBao('Đăng nhập Ví ở trên trước khi rút tiền!', true);
+      if (!bank || !acc || !owner || !amount) return hienThongBao('Điền đầy đủ thông tin ngân hàng!', true);
+
+      try {
+        await goiAPI({ action: 'rutTien', phone: phone, pin: pin, bank: bank, acc: acc, owner: owner, amount: amount });
+        hienThongBao('Đã gửi yêu cầu rút tiền thành công!', false);
+        taiDuLieuVi(true);
+      } catch (err) { hienThongBao(err.message, true); }
     }
   </script>
 </body>
